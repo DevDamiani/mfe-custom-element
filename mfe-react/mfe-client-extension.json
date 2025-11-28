@@ -1,0 +1,21 @@
+{
+    "externalReferenceCode": "mfe-react",
+    "sourceCodeURL": "https://github.com/org/projeto",
+    "name": {
+        "en_US": "React App",
+        "pt_BR": "React App"
+    },
+    "description": "<p>MFF React</p>",
+    "type": "customElement",
+    "typeSettings": {
+        "htmlElementName": "mfe-react",
+        "instanceable": false,
+        "portletCategoryName": "category.client-extensions",
+        "urls": [
+        ],
+        "cssURLs": [
+        ],
+        "useESM": true
+    },
+    "properties": ""
+}

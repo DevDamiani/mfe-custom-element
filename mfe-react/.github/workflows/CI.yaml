@@ -1,0 +1,53 @@
+name: CI - Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: npm i
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Capturar múltiplos JS e CSS do bundle
+        id: assets
+        run: |
+          JS_LIST=$(find dist/ -type f -name "*.js" | xargs -n 1 basename | jq -R -s -c 'split("\n") | map(select(length>0))')
+          CSS_LIST=$(find dist/ -type f -name "*.css" | xargs -n 1 basename | jq -R -s -c 'split("\n") | map(select(length>0))')
+
+          echo "js=$JS_LIST" >> $GITHUB_OUTPUT
+          echo "css=$CSS_LIST" >> $GITHUB_OUTPUT
+
+
+      - name: Montar JSON final a partir do arquivo base
+        run: |
+          JS_URLS=$(echo '${{ steps.assets.outputs.js }}' | jq -c 'map("${{ env.MINIO_ENDPOINT }}/${{ env.BUCKET_NAME }}/${{ env.BUCKET_PATH }}/" + .)')
+          CSS_URLS=$(echo '${{ steps.assets.outputs.css }}' | jq -c 'map("${{ env.MINIO_ENDPOINT }}/${{ env.BUCKET_NAME }}/${{ env.BUCKET_PATH }}/" + .)')
+
+          cat mfe-client-extension.json \
+            | jq --argjson urls "$JS_URLS" \
+                --argjson css "$CSS_URLS" \
+                '.typeSettings.urls = $urls | .typeSettings.cssURLs = $css' \
+            > dist/mfe-final.json
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: react-dist
+          path: dist/
+          retention-days: 5

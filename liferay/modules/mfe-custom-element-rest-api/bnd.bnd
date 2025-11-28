@@ -1,0 +1,4 @@
+Bundle-Name: mfe-custom-element-rest-api-t
+Bundle-SymbolicName: io.github.devdamiani.mfecustomelement
+Bundle-Version: 1.0.0
+Liferay-Configuration-Path: /configuration

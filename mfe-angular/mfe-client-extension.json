@@ -1,0 +1,21 @@
+{
+    "externalReferenceCode": "mfe-angular",
+    "sourceCodeURL": "https://github.com/org/projeto",
+    "name": {
+        "en_US": "angular App",
+        "pt_BR": "angular App"
+    },
+    "description": "<p>MFE Angular</p>",
+    "type": "customElement",
+    "typeSettings": {
+        "htmlElementName": "mfe-angular",
+        "instanceable": false,
+        "portletCategoryName": "category.client-extensions",
+        "urls": [
+        ],
+        "cssURLs": [
+        ],
+        "useESM": true
+    },
+    "properties": ""
+}

@@ -1,0 +1,61 @@
+name: CD - Deploy to S3
+
+on:
+  workflow_run:
+    workflows: [ "CI - Build" ]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: react-dist
+          path: dist/
+
+      - name: Install AWS CLI v2
+        uses: ankurk91/install-aws-cli-action@v1
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Configure AWS CLI for MinIO
+        run: |
+          aws configure set aws_access_key_id "${{ secrets.MINIO_ACCESS_KEY }}"
+          aws configure set aws_secret_access_key "${{ secrets.MINIO_SECRET_KEY }}"
+          aws configure set default.region us-east-1
+          aws configure set default.s3.signature_version s3v4
+
+      - name: Upload files to MinIO
+        run: |
+          echo "deploy to s3://${{ env.BUCKET_NAME }}/${{ env.BUCKET_PATH }}/"
+          aws s3 sync dist/assets s3://${{ env.BUCKET_NAME }}/${{ env.BUCKET_PATH }}/ --endpoint-url "${{ env.MINIO_ENDPOINT }}"
+
+      - name: Registrar MFF no Liferay
+        run: |
+          RESPONSE=$(curl -s -w "%{http_code}" -o liferay-response.json \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -u "${{ secrets.LIFERAY_TOKEN }}" \
+            -d @"dist/mfe-final.json" \
+            "http://localhost:8080/o/mfecustomeelement/")
+
+          echo "HTTP Status: $RESPONSE"
+          echo "Response body:"
+          cat liferay-response.json
+
+          if [ "$RESPONSE" -ge 400 ]; then
+            echo "❌ Liferay retornou erro"
+            exit 1
+          fi
+
+      
+   

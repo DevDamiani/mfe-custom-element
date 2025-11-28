@@ -1,0 +1,5 @@
+--artifact-server-path ./.tmp/artifacts/react
+--env-file ../.act/.env
+--secret-file ../.act/.secrets
+--env BUCKET_PATH=mfe-react
+

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<Configuration strict="true">
+    <Loggers>
+        <Logger level="INFO" name="io.github.devdamiani.mfecustomelement.application.MfeCustomElementRestApiApplication" />
+    </Loggers>
+</Configuration>

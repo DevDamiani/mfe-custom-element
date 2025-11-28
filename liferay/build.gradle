@@ -1,0 +1,5 @@
+// Check GETTING_STARTED.md for information regarding usage.
+
+plugins {
+    id("io.github.devdamiani.liferay-minimal-env") version "+"
+}

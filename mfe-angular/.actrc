@@ -1,0 +1,5 @@
+--artifact-server-path ./.tmp/artifacts/angular
+--env-file ../.act/.env
+--secret-file ../.act/.secrets
+--env BUCKET_PATH=mfe-angular
+
